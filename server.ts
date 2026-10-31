@@ -602,6 +602,56 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
+// --- DEDICATED STANDALONE OWNER ADMIN PORTAL ---
+// Serves completely separate admin portal (not bundled in mobile app)
+app.get('/admin', (_req: Request, res: Response) => {
+  const adminHtmlPath = path.resolve(__dirname, 'src', 'admin.html');
+  res.sendFile(adminHtmlPath);
+});
+
+// Admin update Fal.ai Key
+app.post('/api/admin/update-fal-key', (req: Request, res: Response) => {
+  const { falApiKey, adminPin } = req.body;
+  if (adminPin !== '7788' && adminPin !== 'cliptap2026!') {
+    return res.status(401).json({ error: 'גישה נדחתה: PIN שגוי' });
+  }
+  if (falApiKey && typeof falApiKey === 'string') {
+    process.env.FAL_API_KEY = falApiKey.trim();
+    return res.json({ success: true, message: 'מפתח Fal.ai עודכן בהצלחה בשרת' });
+  }
+  return res.status(400).json({ error: 'מפתח לא תקין' });
+});
+
+// Admin test Fal.ai connection
+app.post('/api/admin/test-fal', async (req: Request, res: Response) => {
+  const { adminPin } = req.body;
+  if (adminPin !== '7788' && adminPin !== 'cliptap2026!') {
+    return res.status(401).json({ error: 'גישה נדחתה' });
+  }
+  const effectiveKey = process.env.FAL_API_KEY;
+  if (!effectiveKey) {
+    return res.json({ success: false, message: 'לא מוגדר מפתח Fal.ai כרגע' });
+  }
+  try {
+    const testRes = await fetch('https://fal.run/fal-ai/flux/schnell', {
+      method: 'POST',
+      headers: {
+        Authorization: `Key ${effectiveKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt: 'test connection', num_inference_steps: 1 }),
+    });
+    const data = await testRes.json();
+    return res.json({
+      success: true,
+      statusCode: testRes.status,
+      message: `תגובת Fal.ai: ${JSON.stringify(data)}`,
+    });
+  } catch (err) {
+    return res.json({ success: false, message: `שגיאת תקשורת עם Fal: ${String(err)}` });
+  }
+});
+
 // Setup Vite middleware in dev or static files in production
 async function start() {
   if (process.env.NODE_ENV !== 'production') {

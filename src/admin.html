@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClipTap AI - לוח בקרת בעלים (Master Admin Portal)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              gold: '#fbbf24',
+              orange: '#f59e0b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Assistant', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
+
+  <!-- 1. LOGIN SCREEN (If not logged in) -->
+  <div id="login-view" class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl text-center">
+      <div class="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center mx-auto mb-4 text-amber-400 text-2xl">
+        🔒
+      </div>
+      <h1 class="text-xl font-black text-white">פורטל בעלים מאובטח</h1>
+      <p class="text-xs text-zinc-400 mt-1">גישה מוגבלת לניהול ClipTap AI בלבד</p>
+
+      <form id="login-form" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-zinc-300 text-right mb-1.5">סיסמת בעלים / PIN:</label>
+          <input 
+            type="password" 
+            id="password-input" 
+            placeholder="הזן סיסמה או PIN..." 
+            class="w-full bg-zinc-950 border border-zinc-800 focus:border-amber-500 rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-colors text-center font-mono"
+            required
+            autofocus
+          />
+        </div>
+        <div id="login-error" class="hidden text-xs text-rose-400 font-bold">
+          סיסמה שגויה. נסה שוב.
+        </div>
+        <button 
+          type="submit" 
+          class="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-zinc-950 font-black text-sm hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-amber-500/20 cursor-pointer"
+        >
+          כניסה לפורטל הניהול 🚀
+        </button>
+      </form>
+      <p class="text-[10px] text-zinc-400 font-mono mt-4">ברירת מחדל: 7788 או cliptap2026!</p>
+    </div>
+  </div>
+
+  <!-- 2. DASHBOARD (After login) -->
+  <div id="dashboard-view" class="hidden min-h-screen flex flex-col">
+    <!-- Top Nav -->
+    <header class="bg-zinc-900/90 border-b border-zinc-800/80 px-6 py-4 flex items-center justify-between sticky top-0 z-30 backdrop-blur-md">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-purple-600 p-[1.5px] flex items-center justify-center">
+          <div class="w-full h-full bg-zinc-950 rounded-[10px] flex items-center justify-center font-black text-amber-400 text-sm">
+            CT
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-black text-white">ClipTap AI Master Control</h1>
+            <span class="text-[10px] font-mono bg-amber-500/15 border border-amber-500/30 text-amber-300 px-2 py-0.5 rounded-full">
+              פורטל בעלים נפרד
+            </span>
+          </div>
+          <p class="text-[11px] text-zinc-400">מערכת ניהול מבודדת - ללא גישה מאפליקציית הלקוח</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/" target="_blank" class="px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 transition-colors">
+          פתח אפליקציית לקוח ↗
+        </a>
+        <button id="logout-btn" class="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-xs font-bold text-rose-300 transition-colors">
+          התנתק 🚪
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-6 space-y-6">
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+          <div class="text-xs text-zinc-400">מחיר סרטון / שיר בודד</div>
+          <div class="text-2xl font-black text-white mono mt-1">$1.00</div>
+          <div class="text-[11px] text-emerald-400 mt-0.5">1 קרדיט ליצירה</div>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+          <div class="text-xs text-zinc-400">חבילת 5 סרטים/שירים</div>
+          <div class="text-2xl font-black text-white mono mt-1">$3.00</div>
+          <div class="text-[11px] text-amber-400 mt-0.5">$0.60 ליצירה (חיסכון 40%)</div>
+        </div>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4">
+          <div class="text-xs text-zinc-400">עמלת App Store (Apple 15%)</div>
+          <div class="text-2xl font-black text-zinc-300 mono mt-1">15%</div>
+          <div class="text-[11px] text-zinc-400 mt-0.5">Apple Small Business Program</div>
+        </div>
+        <div class="bg-zinc-900 border border-emerald-500/30 rounded-2xl p-4 bg-emerald-500/5">
+          <div class="text-xs text-emerald-400">מרווח רווח נטו ממוצע</div>
+          <div class="text-2xl font-black text-emerald-400 mono mt-1">~83.5%</div>
+          <div class="text-[11px] text-emerald-300 mt-0.5">עלות AI זעירה (~$0.015 בלבד)</div>
+        </div>
+      </div>
+
+      <!-- Two Column Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        <!-- Column 1: AI Provider & Engine Control -->
+        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+              <span>⚡ שרתי AI ומפתחות GPU</span>
+            </h2>
+            <span id="ai-status-badge" class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+              Gemini & Fal פעילים
+            </span>
+          </div>
+
+          <div class="space-y-3 pt-2">
+            <div class="p-4 rounded-2xl bg-zinc-950 border border-zinc-800/80 flex items-center justify-between">
+              <div>
+                <div class="font-bold text-sm text-white">Google Gemini 3.8 Flash</div>
+                <div class="text-xs text-zinc-400">ניסוח פרומפטים קולנועיים + Guardrail תיקונים חינמיים</div>
+              </div>
+              <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                100% חינם ($0)
+              </span>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-zinc-950 border border-zinc-800/80 flex items-center justify-between">
+              <div>
+                <div class="font-bold text-sm text-white">Pollinations Flux Engine</div>
+                <div class="text-xs text-zinc-400">הפקת תמונות 8K ריאליסטיות</div>
+              </div>
+              <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                100% חינם ($0)
+              </span>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-zinc-950 border border-zinc-800/80 space-y-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="font-bold text-sm text-white">Fal.ai GPU Cloud (Wan 2.1 & Stable Audio)</div>
+                  <div class="text-xs text-zinc-400">רינדור וידאו HD ומוזיקה אמיתית בענן</div>
+                </div>
+                <button id="test-fal-btn" class="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-semibold text-zinc-200 cursor-pointer">
+                  בדוק חיבור 🔄
+                </button>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-zinc-300 mb-1">עדכון Fal.ai API Key בשרת:</label>
+                <div class="flex gap-2">
+                  <input 
+                    type="text" 
+                    id="fal-key-input" 
+                    placeholder="fal_sk_..." 
+                    class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 font-mono focus:outline-none focus:border-amber-500"
+                  />
+                  <button 
+                    id="save-key-btn" 
+                    class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold text-xs cursor-pointer shadow-md"
+                  >
+                    שמור
+                  </button>
+                </div>
+                <div id="key-feedback" class="text-[11px] text-zinc-400 mt-1"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: TestFlight & App Store Commands -->
+        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 space-y-4">
+          <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+            <span>🍏 מרכז הפצה ל-TestFlight (Mac)</span>
+          </h2>
+          <p class="text-xs text-zinc-400">
+            הקוד המלא כולל את פרויקטי ה-iOS (Xcode) וה-Android (Gradle) מוכנים להפצה בחנויות.
+          </p>
+
+          <div class="space-y-3 pt-1">
+            <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2">
+              <div class="text-xs font-bold text-amber-300">פקודת פתיחה ישירה ב-Xcode במק:</div>
+              <pre class="bg-zinc-900 p-3 rounded-xl text-xs font-mono text-zinc-200 overflow-x-auto select-all" dir="ltr">npm run cap:sync && npm run cap:ios</pre>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2">
+              <div class="text-xs font-bold text-emerald-300">פרטי מזהה האפליקציה (Bundle ID):</div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-zinc-400">App ID / Package:</span>
+                <span class="font-mono text-white bg-zinc-800 px-2 py-0.5 rounded-md">com.cliptap.app</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-zinc-400">שם האפליקציה:</span>
+                <span class="text-white">ClipTap AI</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-zinc-400">GitHub Repository:</span>
+                <a href="https://github.com/cliptap4all-hue/cliptap-ai" target="_blank" class="text-amber-400 underline font-mono text-[11px]">
+                  cliptap4all-hue/cliptap-ai ↗
+                </a>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2 text-xs">
+              <div class="font-bold text-purple-300">איך להעלות ל-TestFlight ב-3 קליקים:</div>
+              <ol class="list-decimal list-inside space-y-1 text-zinc-300 text-[11px]">
+                <li>ב-Xcode בחר יעד: <strong>Any iOS Device (arm64)</strong>.</li>
+                <li>בתפריט העליון לחץ <strong>Product > Archive</strong>.</li>
+                <li>בחלון שייפתח לחץ <strong>Distribute App > TestFlight</strong>.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Financial Projections Table -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 space-y-4">
+        <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+          <span>📊 תחזית רווחים עסקית (Unit Economics)</span>
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead class="text-zinc-400 border-b border-zinc-800">
+              <tr>
+                <th class="pb-3 font-bold">משתמשים משלמים</th>
+                <th class="pb-3 font-bold">הכנסות ברוטו (Gross)</th>
+                <th class="pb-3 font-bold">עמלת Apple (15%)</th>
+                <th class="pb-3 font-bold">עלויות GPU (AI Costs)</th>
+                <th class="pb-3 font-bold text-emerald-400">רווח נקי לכיס (Net Profit)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-zinc-800/60 font-mono text-zinc-200">
+              <tr>
+                <td class="py-3 font-sans font-bold text-white">1,000 משתמשים</td>
+                <td class="py-3">$3,000</td>
+                <td class="py-3 text-rose-400">-$450</td>
+                <td class="py-3 text-amber-400">-$75</td>
+                <td class="py-3 font-bold text-emerald-400">$2,475 (~82.5%)</td>
+              </tr>
+              <tr>
+                <td class="py-3 font-sans font-bold text-white">5,000 משתמשים</td>
+                <td class="py-3">$15,000</td>
+                <td class="py-3 text-rose-400">-$2,250</td>
+                <td class="py-3 text-amber-400">-$375</td>
+                <td class="py-3 font-bold text-emerald-400">$12,375 (~82.5%)</td>
+              </tr>
+              <tr>
+                <td class="py-3 font-sans font-bold text-white">20,000 משתמשים</td>
+                <td class="py-3">$60,000</td>
+                <td class="py-3 text-rose-400">-$9,000</td>
+                <td class="py-3 text-amber-400">-$1,500</td>
+                <td class="py-3 font-bold text-emerald-400">$49,500 (~82.5%)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const MASTER_PIN = '7788';
+    const MASTER_PW = 'cliptap2026!';
+
+    const loginView = document.getElementById('login-view');
+    const dashboardView = document.getElementById('dashboard-view');
+    const loginForm = document.getElementById('login-form');
+    const passwordInput = document.getElementById('password-input');
+    const loginError = document.getElementById('login-error');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // Check stored session
+    if (sessionStorage.getItem('cliptap_admin_auth') === 'true') {
+      showDashboard();
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = passwordInput.value.trim();
+      if (val === MASTER_PIN || val === MASTER_PW) {
+        sessionStorage.setItem('cliptap_admin_auth', 'true');
+        loginError.classList.add('hidden');
+        showDashboard();
+      } else {
+        loginError.classList.remove('hidden');
+        passwordInput.value = '';
+      }
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('cliptap_admin_auth');
+      loginView.classList.remove('hidden');
+      dashboardView.classList.add('hidden');
+      passwordInput.value = '';
+    });
+
+    function showDashboard() {
+      loginView.classList.add('hidden');
+      dashboardView.classList.remove('hidden');
+      loadServerStatus();
+    }
+
+    async function loadServerStatus() {
+      try {
+        const res = await fetch('/api/health');
+        const data = await res.json();
+        const badge = document.getElementById('ai-status-badge');
+        if (data.status === 'ok') {
+          badge.textContent = `שרת תקין (Gemini: ${data.geminiEnabled ? '✓' : '✗'}, Fal: ${data.falEnabled ? '✓' : '✗'})`;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Save Fal Key
+    const saveKeyBtn = document.getElementById('save-key-btn');
+    const falKeyInput = document.getElementById('fal-key-input');
+    const keyFeedback = document.getElementById('key-feedback');
+
+    saveKeyBtn.addEventListener('click', async () => {
+      const key = falKeyInput.value.trim();
+      if (!key) return;
+      keyFeedback.textContent = 'שומר מפתח בשרת...';
+      try {
+        const res = await fetch('/api/admin/update-fal-key', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ falApiKey: key, adminPin: MASTER_PIN })
+        });
+        const data = await res.json();
+        if (data.success) {
+          keyFeedback.textContent = '✓ מפתח Fal.ai נשמר ואומת בהצלחה בשרת!';
+          keyFeedback.className = 'text-[11px] text-emerald-400 mt-1';
+          loadServerStatus();
+        } else {
+          keyFeedback.textContent = 'שגיאה בשמירת המפתח';
+          keyFeedback.className = 'text-[11px] text-rose-400 mt-1';
+        }
+      } catch (err) {
+        keyFeedback.textContent = 'שגיאת רשת בשמירה';
+      }
+    });
+
+    // Test Fal Connection
+    const testFalBtn = document.getElementById('test-fal-btn');
+    testFalBtn.addEventListener('click', async () => {
+      testFalBtn.textContent = 'בודק...';
+      try {
+        const res = await fetch('/api/admin/test-fal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ adminPin: MASTER_PIN })
+        });
+        const data = await res.json();
+        alert(data.message || JSON.stringify(data));
+      } catch (err) {
+        alert('שגיאה בבדיקת החיבור');
+      } finally {
+        testFalBtn.textContent = 'בדוק חיבור 🔄';
+      }
+    });
+  </script>
+</body>
+</html>

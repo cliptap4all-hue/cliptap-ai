@@ -9,15 +9,12 @@ import { Page1Input } from './components/Page1Input';
 import { Page2Approval } from './components/Page2Approval';
 import { Page3Result } from './components/Page3Result';
 import { PaywallModal } from './components/PaywallModal';
-import { SettingsModal } from './components/SettingsModal';
 import { ReportModal } from './components/ReportModal';
 import { SmartFixModal } from './components/SmartFixModal';
 import { InstallAppModal } from './components/InstallAppModal';
-import { AdminLoginModal } from './components/AdminLoginModal';
 import { usePWAInstall } from './hooks/usePWAInstall';
 import {
   CreditPackage,
-  DeveloperProfitStats,
   GenerationResult,
   MediaType,
   PromptSuggestion,
@@ -27,18 +24,7 @@ import { triggerSuccessConfetti } from './utils/confetti';
 
 const STORAGE_KEYS = {
   CREDITS: 'omnistudio_credits',
-  FAL_KEY: 'omnistudio_fal_key',
-  PROFIT_STATS: 'omnistudio_profit_stats',
   HISTORY: 'omnistudio_history',
-};
-
-const DEFAULT_PROFIT_STATS: DeveloperProfitStats = {
-  totalRevenueUsd: 0,
-  appStoreFeesUsd: 0,
-  aiGenerationCostsUsd: 0,
-  netProfitUsd: 0,
-  totalCreationsGenerated: 0,
-  purchasesCount: 0,
 };
 
 export default function App() {
@@ -71,41 +57,10 @@ export default function App() {
   const { isInstallable, isInstalled, install: installPWA } = usePWAInstall();
   const [isInstallModalOpen, setIsInstallModalOpen] = React.useState<boolean>(false);
 
-  // Hidden Master Admin Access (PIN Protected)
-  const [isAdminLoginOpen, setIsAdminLoginOpen] = React.useState<boolean>(false);
-
-  React.useEffect(() => {
-    // Secret URL entry for admin: ?admin=1 or ?admin=true
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('admin') === '1' || params.get('admin') === 'true' || params.get('admin') === 'cliptap') {
-        setIsAdminLoginOpen(true);
-      }
-    }
-  }, []);
-
   // Credits & Monetization (defaults to 3 free test credits)
   const [credits, setCredits] = React.useState<number>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.CREDITS);
     return saved !== null ? Number(saved) : 3;
-  });
-
-  // Fal.ai API key from Settings
-  const [falApiKey, setFalApiKey] = React.useState<string>(() => {
-    return localStorage.getItem(STORAGE_KEYS.FAL_KEY) || '';
-  });
-
-  // Developer Profit Tracker stats
-  const [profitStats, setProfitStats] = React.useState<DeveloperProfitStats>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.PROFIT_STATS);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return DEFAULT_PROFIT_STATS;
-      }
-    }
-    return DEFAULT_PROFIT_STATS;
   });
 
   // Creations History
@@ -123,7 +78,6 @@ export default function App() {
 
   // Modals
   const [isPaywallOpen, setIsPaywallOpen] = React.useState<boolean>(false);
-  const [isSettingsOpen, setIsSettingsOpen] = React.useState<boolean>(false);
   const [reportMediaId, setReportMediaId] = React.useState<string | null>(null);
 
   // Toast feedback
@@ -139,21 +93,10 @@ export default function App() {
     localStorage.setItem(STORAGE_KEYS.CREDITS, String(credits));
   }, [credits]);
 
-  // Persist profit stats
-  React.useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.PROFIT_STATS, JSON.stringify(profitStats));
-  }, [profitStats]);
-
   // Persist history
   React.useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(history));
   }, [history]);
-
-  // Save Fal API key
-  const handleSaveFalApiKey = (key: string) => {
-    setFalApiKey(key);
-    localStorage.setItem(STORAGE_KEYS.FAL_KEY, key);
-  };
 
   // STEP 1: GENERATE PROMPTS (Gemini Free Engine)
   const handleGeneratePrompts = async () => {
@@ -212,7 +155,6 @@ export default function App() {
           mediaType,
           prompt: editedPromptText,
           referenceImage,
-          falApiKey,
           resolution,
         }),
       });
@@ -238,19 +180,6 @@ export default function App() {
 
         setCurrentResult(newResult);
         setHistory((prev) => [newResult, ...prev]);
-
-        // Update developer profit tracking with generation cost
-        const aiCost = data.costEstimate || (mediaType === 'video' ? 0.015 : mediaType === 'music' ? 0.01 : 0);
-        setProfitStats((prev) => {
-          const totalCost = prev.aiGenerationCostsUsd + aiCost;
-          const net = prev.totalRevenueUsd - prev.appStoreFeesUsd - totalCost;
-          return {
-            ...prev,
-            aiGenerationCostsUsd: totalCost,
-            netProfitUsd: net,
-            totalCreationsGenerated: prev.totalCreationsGenerated + 1,
-          };
-        });
 
         triggerSuccessConfetti();
         showToast('היצירה הופקה בהצלחה! 🚀');
@@ -295,7 +224,6 @@ export default function App() {
           mediaType: currentResult.mediaType,
           prompt: refinedPrompt,
           referenceImage,
-          falApiKey,
           resolution: currentResult.resolution || resolution,
         }),
       });
@@ -319,18 +247,6 @@ export default function App() {
         setHasUsedRetake(true);
         setIsSmartFixOpen(false);
 
-        // Update developer profit tracking with extra AI cost
-        const extraAiCost = genData.costEstimate || (currentResult.mediaType === 'video' ? 0.015 : currentResult.mediaType === 'music' ? 0.01 : 0);
-        setProfitStats((prev) => {
-          const totalCost = prev.aiGenerationCostsUsd + extraAiCost;
-          const net = prev.totalRevenueUsd - prev.appStoreFeesUsd - totalCost;
-          return {
-            ...prev,
-            aiGenerationCostsUsd: totalCost,
-            netProfitUsd: net,
-          };
-        });
-
         triggerSuccessConfetti();
         showToast('התוצאה תוקנה ודויקה בחינם! 🚀 (1/1)');
       } else {
@@ -348,45 +264,8 @@ export default function App() {
   const handleSelectPackage = (pkg: CreditPackage) => {
     // Add credits to balance
     setCredits((prev) => prev + pkg.credits);
-
-    // Update Developer Profit Stats
-    // 15% Apple Small Business fee
-    const gross = pkg.priceUsd;
-    const storeFee = gross * 0.15;
-
-    setProfitStats((prev) => {
-      const newGross = prev.totalRevenueUsd + gross;
-      const newStoreFees = prev.appStoreFeesUsd + storeFee;
-      const newNet = newGross - newStoreFees - prev.aiGenerationCostsUsd;
-      return {
-        ...prev,
-        totalRevenueUsd: newGross,
-        appStoreFeesUsd: newStoreFees,
-        netProfitUsd: newNet,
-        purchasesCount: prev.purchasesCount + 1,
-      };
-    });
-
+    triggerSuccessConfetti();
     showToast(`נוספו ${pkg.credits} קרדיטים בהצלחה! 🎉`);
-  };
-
-  // Simulate a custom purchase from Settings Developer Tracker
-  const handleSimulatePurchase = (amountUsd: number, creditsCount: number) => {
-    setCredits((prev) => prev + creditsCount);
-    const storeFee = amountUsd * 0.15;
-    setProfitStats((prev) => {
-      const newGross = prev.totalRevenueUsd + amountUsd;
-      const newStoreFees = prev.appStoreFeesUsd + storeFee;
-      const newNet = newGross - newStoreFees - prev.aiGenerationCostsUsd;
-      return {
-        ...prev,
-        totalRevenueUsd: newGross,
-        appStoreFeesUsd: newStoreFees,
-        netProfitUsd: newNet,
-        purchasesCount: prev.purchasesCount + 1,
-      };
-    });
-    showToast(`סימולציה: +${creditsCount} קרדיטים ($${amountUsd}) נרשמו!`);
   };
 
   // Compliance: Reset all local data
@@ -398,13 +277,6 @@ export default function App() {
     setCurrentResult(null);
     setCurrentPage(1);
     showToast('הנתונים המקומיים וההיסטוריה נמחקו');
-  };
-
-  // Reset profit stats
-  const handleResetProfitStats = () => {
-    setProfitStats(DEFAULT_PROFIT_STATS);
-    localStorage.removeItem(STORAGE_KEYS.PROFIT_STATS);
-    showToast('מחשבון הרווחים אופס');
   };
 
   // Delete single history item
@@ -428,7 +300,6 @@ export default function App() {
           currentPage={currentPage}
           isInstalled={isInstalled}
           onOpenInstallModal={() => setIsInstallModalOpen(true)}
-          onSecretAdminTrigger={() => setIsAdminLoginOpen(true)}
         />
 
         {/* Toast Feedback */}
@@ -513,20 +384,6 @@ export default function App() {
           currentCredits={credits}
         />
 
-        {/* Developer Settings & Profit Tracker Modal */}
-        <SettingsModal
-          isOpen={isSettingsOpen}
-          onClose={() => setIsSettingsOpen(false)}
-          falApiKey={falApiKey}
-          onSaveFalApiKey={handleSaveFalApiKey}
-          profitStats={profitStats}
-          onSimulatePurchase={handleSimulatePurchase}
-          onResetData={handleResetData}
-          onResetProfitStats={handleResetProfitStats}
-          credits={credits}
-          onSetCredits={setCredits}
-        />
-
         {/* Report Content Modal (Compliance) */}
         <ReportModal
           isOpen={Boolean(reportMediaId)}
@@ -540,17 +397,6 @@ export default function App() {
           onClose={() => setIsInstallModalOpen(false)}
           isInstallable={isInstallable}
           onInstallNative={installPWA}
-        />
-
-        {/* Master Admin Login Security Gate (PIN Protected) */}
-        <AdminLoginModal
-          isOpen={isAdminLoginOpen}
-          onClose={() => setIsAdminLoginOpen(false)}
-          onSuccess={() => {
-            setIsAdminLoginOpen(false);
-            setIsSettingsOpen(true);
-            showToast('שלום המנהל! לוח הבקרה פתוח 👑');
-          }}
         />
       </div>
     </div>

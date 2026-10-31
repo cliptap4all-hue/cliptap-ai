@@ -8,7 +8,6 @@ interface HeaderProps {
   currentPage: number;
   isInstalled: boolean;
   onOpenInstallModal: () => void;
-  onSecretAdminTrigger: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,32 +17,12 @@ export const Header: React.FC<HeaderProps> = ({
   currentPage,
   isInstalled,
   onOpenInstallModal,
-  onSecretAdminTrigger,
 }) => {
-  // Secret Admin Trigger: 5 rapid taps on the logo
-  const tapCountRef = React.useRef(0);
-  const lastTapTimeRef = React.useRef(0);
-
-  const handleLogoClick = () => {
-    const now = Date.now();
-    if (now - lastTapTimeRef.current < 600) {
-      tapCountRef.current += 1;
-      if (tapCountRef.current >= 5) {
-        tapCountRef.current = 0;
-        onSecretAdminTrigger();
-        return;
-      }
-    } else {
-      tapCountRef.current = 1;
-    }
-    lastTapTimeRef.current = now;
-    onGoHome();
-  };
   return (
     <header className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/80 px-4 py-3 flex items-center justify-between">
       {/* App Logo */}
       <button
-        onClick={handleLogoClick}
+        onClick={onGoHome}
         className="flex items-center gap-2 group text-right focus:outline-none cursor-pointer"
         title="חזרה לדף הבית"
       >

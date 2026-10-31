@@ -129,8 +129,8 @@ export const Page2Approval: React.FC<Page2ApprovalProps> = ({
       {/* 3 AI Style Prompt Cards */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs px-1">
-          <span className="font-bold text-zinc-300">בחר את הסגנון המוביל מתוך 3 הצעות:</span>
-          <span className="text-[10px] text-zinc-400">לחץ לבחירה ועריכה</span>
+          <span className="font-bold text-zinc-300">בחירת הסגנון המוביל מתוך 3 הצעות:</span>
+          <span className="text-[10px] text-zinc-400">לחיצה לבחירה ועריכה</span>
         </div>
 
         <div className="space-y-2.5">

@@ -238,7 +238,7 @@ export const Page1Input: React.FC<Page1InputProps> = ({
         <div className="flex items-center justify-between text-xs px-1">
           <label className="font-bold text-zinc-200 flex items-center gap-1.5">
             <Wand2 className="w-3.5 h-3.5 text-amber-400" />
-            <span>תאר את הרעיון שלך בכמה מילים:</span>
+            <span>תיאור הרעיון בכמה מילים:</span>
           </label>
           <span className="text-[11px] text-zinc-400">{idea.length} תווים</span>
         </div>
@@ -247,7 +247,7 @@ export const Page1Input: React.FC<Page1InputProps> = ({
           <textarea
             value={idea}
             onChange={(e) => onChangeIdea(e.target.value)}
-            placeholder="כתוב כאן את כל חלומותיך... ✨"
+            placeholder="כאן מגשימים את כל החלומות... ✨"
             rows={3}
             className="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-2xl p-3.5 text-sm text-white placeholder-zinc-500 focus:outline-none transition-colors shadow-inner resize-none"
           />

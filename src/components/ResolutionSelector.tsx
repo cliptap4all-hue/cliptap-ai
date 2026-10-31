@@ -81,7 +81,7 @@ export const ResolutionSelector: React.FC<ResolutionSelectorProps> = ({
       <div className="flex items-center justify-between text-xs px-1">
         <label className="font-bold text-zinc-300 flex items-center gap-1.5">
           <Monitor className="w-3.5 h-3.5 text-amber-400" />
-          <span>בחר רזולוציית הפקה ואיכות:</span>
+          <span>בחירת רזולוציה ואיכות:</span>
         </label>
         <span className="text-[10px] text-zinc-400 font-mono">
           נבחר: <strong className={accentTheme.activeText}>{selectedResolution}</strong>

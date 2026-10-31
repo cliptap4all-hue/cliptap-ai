@@ -1,0 +1,6 @@
+{
+  "name": "OmniStudio AI",
+  "description": "סטודיו AI נייד ליצירת וידאו, תמונות ומוזיקה בעלויות מינימליות עם אישור פרומפטים דו-שלבי ומערכת קרדיטים",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

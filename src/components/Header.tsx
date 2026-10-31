@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Coins, Plus, Settings } from 'lucide-react';
+import { Sparkles, Coins, Plus, Settings, Smartphone } from 'lucide-react';
 
 interface HeaderProps {
   credits: number;
@@ -7,6 +7,8 @@ interface HeaderProps {
   onOpenSettings: () => void;
   onGoHome: () => void;
   currentPage: number;
+  isInstalled: boolean;
+  onOpenInstallModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -15,6 +17,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSettings,
   onGoHome,
   currentPage,
+  isInstalled,
+  onOpenInstallModal,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/80 px-4 py-3 flex items-center justify-between">
@@ -59,6 +63,18 @@ export const Header: React.FC<HeaderProps> = ({
             <Plus className="w-3 h-3 stroke-[3]" />
           </div>
         </button>
+
+        {/* Install App on iPhone / Mobile Button */}
+        {!isInstalled && (
+          <button
+            onClick={onOpenInstallModal}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+            title="התקן את האפליקציה באייפון"
+          >
+            <Smartphone className="w-3.5 h-3.5 text-amber-400" />
+            <span>התקן</span>
+          </button>
+        )}
 
         {/* Developer Settings Button */}
         <button

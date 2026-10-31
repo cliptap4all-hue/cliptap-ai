@@ -12,6 +12,8 @@ import { PaywallModal } from './components/PaywallModal';
 import { SettingsModal } from './components/SettingsModal';
 import { ReportModal } from './components/ReportModal';
 import { SmartFixModal } from './components/SmartFixModal';
+import { InstallAppModal } from './components/InstallAppModal';
+import { usePWAInstall } from './hooks/usePWAInstall';
 import {
   CreditPackage,
   DeveloperProfitStats,
@@ -63,6 +65,10 @@ export default function App() {
   const [hasDownloaded, setHasDownloaded] = React.useState<boolean>(false);
   const [isSmartFixOpen, setIsSmartFixOpen] = React.useState<boolean>(false);
   const [isFixingMedia, setIsFixingMedia] = React.useState<boolean>(false);
+
+  // PWA & iOS Home Screen Install
+  const { isInstallable, isInstalled, install: installPWA } = usePWAInstall();
+  const [isInstallModalOpen, setIsInstallModalOpen] = React.useState<boolean>(false);
 
   // Credits & Monetization (defaults to 3 free test credits)
   const [credits, setCredits] = React.useState<number>(() => {
@@ -407,6 +413,8 @@ export default function App() {
           onOpenSettings={() => setIsSettingsOpen(true)}
           onGoHome={() => setCurrentPage(1)}
           currentPage={currentPage}
+          isInstalled={isInstalled}
+          onOpenInstallModal={() => setIsInstallModalOpen(true)}
         />
 
         {/* Toast Feedback */}
@@ -510,6 +518,14 @@ export default function App() {
           isOpen={Boolean(reportMediaId)}
           onClose={() => setReportMediaId(null)}
           mediaId={reportMediaId || ''}
+        />
+
+        {/* Install on iPhone / Mobile Modal */}
+        <InstallAppModal
+          isOpen={isInstallModalOpen}
+          onClose={() => setIsInstallModalOpen(false)}
+          isInstallable={isInstallable}
+          onInstallNative={installPWA}
         />
       </div>
     </div>

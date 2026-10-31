@@ -13,6 +13,7 @@ import { SettingsModal } from './components/SettingsModal';
 import { ReportModal } from './components/ReportModal';
 import { SmartFixModal } from './components/SmartFixModal';
 import { InstallAppModal } from './components/InstallAppModal';
+import { AdminLoginModal } from './components/AdminLoginModal';
 import { usePWAInstall } from './hooks/usePWAInstall';
 import {
   CreditPackage,
@@ -69,6 +70,19 @@ export default function App() {
   // PWA & iOS Home Screen Install
   const { isInstallable, isInstalled, install: installPWA } = usePWAInstall();
   const [isInstallModalOpen, setIsInstallModalOpen] = React.useState<boolean>(false);
+
+  // Hidden Master Admin Access (PIN Protected)
+  const [isAdminLoginOpen, setIsAdminLoginOpen] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    // Secret URL entry for admin: ?admin=1 or ?admin=true
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('admin') === '1' || params.get('admin') === 'true' || params.get('admin') === 'cliptap') {
+        setIsAdminLoginOpen(true);
+      }
+    }
+  }, []);
 
   // Credits & Monetization (defaults to 3 free test credits)
   const [credits, setCredits] = React.useState<number>(() => {
@@ -410,11 +424,11 @@ export default function App() {
         <Header
           credits={credits}
           onOpenPaywall={() => setIsPaywallOpen(true)}
-          onOpenSettings={() => setIsSettingsOpen(true)}
           onGoHome={() => setCurrentPage(1)}
           currentPage={currentPage}
           isInstalled={isInstalled}
           onOpenInstallModal={() => setIsInstallModalOpen(true)}
+          onSecretAdminTrigger={() => setIsAdminLoginOpen(true)}
         />
 
         {/* Toast Feedback */}
@@ -526,6 +540,17 @@ export default function App() {
           onClose={() => setIsInstallModalOpen(false)}
           isInstallable={isInstallable}
           onInstallNative={installPWA}
+        />
+
+        {/* Master Admin Login Security Gate (PIN Protected) */}
+        <AdminLoginModal
+          isOpen={isAdminLoginOpen}
+          onClose={() => setIsAdminLoginOpen(false)}
+          onSuccess={() => {
+            setIsAdminLoginOpen(false);
+            setIsSettingsOpen(true);
+            showToast('שלום המנהל! לוח הבקרה פתוח 👑');
+          }}
         />
       </div>
     </div>

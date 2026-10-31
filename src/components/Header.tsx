@@ -1,30 +1,49 @@
 import React from 'react';
-import { Sparkles, Coins, Plus, Settings, Smartphone } from 'lucide-react';
+import { Sparkles, Coins, Plus, Smartphone } from 'lucide-react';
 
 interface HeaderProps {
   credits: number;
   onOpenPaywall: () => void;
-  onOpenSettings: () => void;
   onGoHome: () => void;
   currentPage: number;
   isInstalled: boolean;
   onOpenInstallModal: () => void;
+  onSecretAdminTrigger: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   credits,
   onOpenPaywall,
-  onOpenSettings,
   onGoHome,
   currentPage,
   isInstalled,
   onOpenInstallModal,
+  onSecretAdminTrigger,
 }) => {
+  // Secret Admin Trigger: 5 rapid taps on the logo
+  const tapCountRef = React.useRef(0);
+  const lastTapTimeRef = React.useRef(0);
+
+  const handleLogoClick = () => {
+    const now = Date.now();
+    if (now - lastTapTimeRef.current < 600) {
+      tapCountRef.current += 1;
+      if (tapCountRef.current >= 5) {
+        tapCountRef.current = 0;
+        onSecretAdminTrigger();
+        return;
+      }
+    } else {
+      tapCountRef.current = 1;
+    }
+    lastTapTimeRef.current = now;
+    onGoHome();
+  };
   return (
     <header className="sticky top-0 z-40 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800/80 px-4 py-3 flex items-center justify-between">
       {/* App Logo */}
       <button
-        onClick={onGoHome}
+        onClick={handleLogoClick}
         className="flex items-center gap-2 group text-right focus:outline-none cursor-pointer"
         title="חזרה לדף הבית"
       >
@@ -48,7 +67,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </button>
 
-      {/* Right side: Credits Badge + Settings */}
+      {/* Right side: Credits Badge + Install App */}
       <div className="flex items-center gap-2">
         {/* Credits Badge */}
         <button
@@ -75,15 +94,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span>התקן</span>
           </button>
         )}
-
-        {/* Developer Settings Button */}
-        <button
-          onClick={onOpenSettings}
-          className="p-2 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 transition-colors cursor-pointer"
-          title="הגדרות מפתח ומחשבון רווחים"
-        >
-          <Settings className="w-4 h-4" />
-        </button>
       </div>
     </header>
   );

@@ -83,8 +83,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <Calculator className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-base text-white">לוח בקרה & מחשבון מפתח</h3>
-              <p className="text-[11px] text-zinc-400">ניהול מנועים, רווחיות נטו ותאימות חנות</p>
+              <div className="flex items-center gap-1.5">
+                <h3 className="font-extrabold text-base text-white">לוח בקרת בעלים 👑</h3>
+                <span className="text-[9px] font-mono bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded-full border border-amber-500/30">Admin</span>
+              </div>
+              <p className="text-[11px] text-zinc-400">ניהול הכנסות, מפתחות Fal.ai והגדרות חנות (מוגן)</p>
             </div>
           </div>
           <button

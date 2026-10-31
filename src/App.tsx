@@ -45,7 +45,7 @@ export default function App() {
   // User input states
   const [mediaType, setMediaType] = React.useState<MediaType>('video');
   const [resolution, setResolution] = React.useState<Resolution>('480p');
-  const [idea, setIdea] = React.useState<string>('גולש על גל ענק בשקיעה עוצרת נשימה');
+  const [idea, setIdea] = React.useState<string>('');
   const [referenceImage, setReferenceImage] = React.useState<string | null>(null);
 
   // Step 1 Prompts generated

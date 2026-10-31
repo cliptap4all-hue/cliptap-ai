@@ -247,13 +247,7 @@ export const Page1Input: React.FC<Page1InputProps> = ({
           <textarea
             value={idea}
             onChange={(e) => onChangeIdea(e.target.value)}
-            placeholder={
-              mediaType === 'video'
-                ? 'לדוגמה: גולש על גל ענק בשקיעה עוצרת נשימה...'
-                : mediaType === 'music'
-                ? 'לדוגמה: סולו גיטרה בסגנון רוק שנות ה-90 עם תופים חיים...'
-                : 'לדוגמה: חתול אסטרונאוט מרחף בחלל ליד כדור הארץ...'
-            }
+            placeholder="כתוב כאן את כל חלומותיך... ✨"
             rows={3}
             className="w-full bg-zinc-900 border border-zinc-800 focus:border-amber-500 rounded-2xl p-3.5 text-sm text-white placeholder-zinc-500 focus:outline-none transition-colors shadow-inner resize-none"
           />
